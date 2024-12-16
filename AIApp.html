@@ -1,0 +1,155 @@
+<!-- Zachary Worthington
+IS 201 Web Development Project-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Match Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            grid-gap: 10px;
+        }
+
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: #1e90ff;
+            color: white;
+            display: flex;
+            align-items: center;
+                justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            border-radius: 8px;
+            user-select: none;
+        }
+
+        .card.matched {
+            background-color: #32cd32;
+            cursor: default;
+        }
+
+        .card.hidden {
+            background-color: #1e90ff;
+            color: transparent;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            background-color: #1e90ff;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #4682b4;
+        }
+    </style>
+</head>
+<body>
+         <!-- Navigation-->
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                        <a class="AIlinks" href="index.html">Resume</a>|
+                        <a class="AIlinks" href="Rugby.html">Rugby</a>|
+                        <a class="AIlinks" href="AIApp.html">AI App</a>|
+                </div>
+    <br>
+    <br>
+    <br>
+    <h1>Memory Match Game</h1>
+    <div class="game-board" id="gameBoard"></div>
+     <button onclick="startGame()">Restart Game</button>
+
+    <script>
+        const gameBoard = document.getElementById('gameBoard');
+        let cards = [];
+        let firstCard = null;
+        let secondCard = null;
+        let lockBoard = false;
+
+        function createBoard() {
+            const symbols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+            const pairs = symbols.concat(symbols); // Create pairs
+            pairs.sort(() => 0.5 - Math.random()); // Shuffle the array
+
+            pairs.forEach(symbol => {
+                const card = document.createElement('div');
+                card.classList.add('card', 'hidden');
+                card.textContent = symbol;
+                card.addEventListener('click', flipCard);
+                gameBoard.appendChild(card);
+                cards.push(card);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard || this === firstCard || this.classList.contains('matched')) return;
+
+            this.classList.remove('hidden');
+
+            if (!firstCard) {
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+                    checkForMatch();
+        }
+
+        function checkForMatch() {
+            if (firstCard.textContent === secondCard.textContent) {
+                firstCard.classList.add('matched');
+                secondCard.classList.add('matched');
+                resetTurn();
+            } else {
+                lockBoard = true;
+                setTimeout(() => {
+                    firstCard.classList.add('hidden');
+                    secondCard.classList.add('hidden');
+                    resetTurn();
+                }, 1000);
+            }
+        }
+
+        function resetTurn() {
+            [firstCard, secondCard] = [null, null];
+            lockBoard = false;
+        }
+
+        function startGame() {
+            gameBoard.innerHTML = '';
+            cards = [];
+            firstCard = null;
+            secondCard = null;
+            lockBoard = false;
+            createBoard();
+        }
+
+        // Initialize the game on load
+          startGame();
+    </script>
+</body>
+</html>
